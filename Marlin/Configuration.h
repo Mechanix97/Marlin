@@ -103,7 +103,7 @@
  * Currently Ethernet (-2) is only supported on Teensy 4.1 boards.
  * :[-2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
  */
-// #define SERIAL_PORT_2 -1
+#define SERIAL_PORT_2 -1
 // #define BAUDRATE_2 250000   // :[2400, 9600, 19200, 38400, 57600, 115200, 250000, 500000, 1000000] Enable to override BAUDRATE
 
 /**
@@ -152,9 +152,9 @@
  *          TMC5130, TMC5130_STANDALONE, TMC5160, TMC5160_STANDALONE
  * :['A4988', 'A5984', 'DRV8825', 'LV8729', 'TB6560', 'TB6600', 'TMC2100', 'TMC2130', 'TMC2130_STANDALONE', 'TMC2160', 'TMC2160_STANDALONE', 'TMC2208', 'TMC2208_STANDALONE', 'TMC2209', 'TMC2209_STANDALONE', 'TMC2240', 'TMC2660', 'TMC2660_STANDALONE', 'TMC5130', 'TMC5130_STANDALONE', 'TMC5160', 'TMC5160_STANDALONE']
  */
-#define X_DRIVER_TYPE A4988
-#define Y_DRIVER_TYPE A4988
-#define Z_DRIVER_TYPE A4988
+#define X_DRIVER_TYPE TMC2209
+#define Y_DRIVER_TYPE TMC2209
+#define Z_DRIVER_TYPE TMC2208
 // #define X2_DRIVER_TYPE A4988
 // #define Y2_DRIVER_TYPE A4988
 // #define Z2_DRIVER_TYPE A4988
@@ -166,7 +166,7 @@
 // #define U_DRIVER_TYPE  A4988
 // #define V_DRIVER_TYPE  A4988
 // #define W_DRIVER_TYPE  A4988
-#define E0_DRIVER_TYPE A4988
+#define E0_DRIVER_TYPE TMC2208
 // #define E1_DRIVER_TYPE A4988
 // #define E2_DRIVER_TYPE A4988
 // #define E3_DRIVER_TYPE A4988
@@ -1238,7 +1238,7 @@
 #define X_MAX_ENDSTOP_HIT_STATE HIGH
 #define Y_MIN_ENDSTOP_HIT_STATE HIGH
 #define Y_MAX_ENDSTOP_HIT_STATE HIGH
-#define Z_MIN_ENDSTOP_HIT_STATE HIGH
+#define Z_MIN_ENDSTOP_HIT_STATE LOW
 #define Z_MAX_ENDSTOP_HIT_STATE HIGH
 #define I_MIN_ENDSTOP_HIT_STATE HIGH
 #define I_MAX_ENDSTOP_HIT_STATE HIGH
@@ -1300,7 +1300,7 @@
  * Override with M92 (when enabled below)
  *                                      X, Y, Z [, I [, J [, K...]]], E0 [, E1[, E2...]]
  */
-#define DEFAULT_AXIS_STEPS_PER_UNIT {80, 80, 400, 500}
+#define DEFAULT_AXIS_STEPS_PER_UNIT {80, 80, 400, 95}
 
 /**
  * Enable support for M92. Disable to save at least ~530 bytes of flash.
@@ -1442,7 +1442,7 @@
  * Use G29 repeatedly, adjusting the Z height at each point with movement commands
  * or (with LCD_BED_LEVELING) the LCD controller.
  */
-// #define PROBE_MANUALLY
+#define PROBE_MANUALLY
 
 /**
  * A Fix-Mounted Probe either doesn't deploy or needs manual deployment.
@@ -1832,8 +1832,8 @@
 
 // Invert the stepper direction. Change (or reverse the motor connector) if an axis goes the wrong way.
 #define INVERT_X_DIR false
-#define INVERT_Y_DIR true
-#define INVERT_Z_DIR false
+#define INVERT_Y_DIR false
+#define INVERT_Z_DIR true
 // #define INVERT_I_DIR false
 // #define INVERT_J_DIR false
 // #define INVERT_K_DIR false
@@ -1903,16 +1903,16 @@
 // @section geometry
 
 // The size of the printable area
-#define X_BED_SIZE 200
-#define Y_BED_SIZE 200
+#define X_BED_SIZE 220
+#define Y_BED_SIZE 220
 
 // Travel limits (linear=mm, rotational=°) after homing, corresponding to endstop positions.
-#define X_MIN_POS 0
-#define Y_MIN_POS 0
+#define X_MIN_POS -28
+#define Y_MIN_POS -10
 #define Z_MIN_POS 0
 #define X_MAX_POS X_BED_SIZE
 #define Y_MAX_POS Y_BED_SIZE
-#define Z_MAX_POS 200
+#define Z_MAX_POS 240
 // #define I_MIN_POS 0
 // #define I_MAX_POS 50
 // #define J_MIN_POS 0
@@ -2127,7 +2127,7 @@
  *   With an LCD controller the process is guided step-by-step.
  */
 // #define AUTO_BED_LEVELING_3POINT
-// #define AUTO_BED_LEVELING_LINEAR
+#define AUTO_BED_LEVELING_LINEAR
 // #define AUTO_BED_LEVELING_BILINEAR
 // #define AUTO_BED_LEVELING_UBL
 // #define MESH_BED_LEVELING
@@ -2297,7 +2297,7 @@
  * Add a bed leveling sub-menu for ABL or MBL.
  * Include a guided procedure if manual probing is enabled.
  */
-// #define LCD_BED_LEVELING
+#define LCD_BED_LEVELING
 
 #if ENABLED(LCD_BED_LEVELING)
 #define MESH_EDIT_Z_STEP 0.025 // (mm) Step size while manually probing Z axis.
@@ -2709,7 +2709,7 @@
  * SD Card support is disabled by default. If your controller has an SD slot,
  * you must uncomment the following option or it won't work.
  */
-// #define SDSUPPORT
+#define SDSUPPORT
 
 /**
  * SD CARD: ENABLE CRC
@@ -2940,7 +2940,7 @@
  * This LCD is known to be susceptible to electrical interference which
  * scrambles the display. Press any button to clear it up.
  */
-// #define ZONESTAR_LCD
+#define ZONESTAR_LCD
 
 //
 // Generic 16x2, 16x4, 20x2, or 20x4 character-based LCD.
