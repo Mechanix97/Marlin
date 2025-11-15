@@ -1153,6 +1153,7 @@
 // #define FTM_HOME_AND_PROBE                  // Use FT Motion for homing / probing. Disable if FT Motion breaks these functions.
 
 #define FTM_DEFAULT_DYNFREQ_MODE dynFreqMode_DISABLED // Default mode of dynamic frequency calculation. (DISABLED, Z_BASED, MASS_BASED)
+#define FTM_DEFAULT_DYNFREQ_MODE dynFreqMode_DISABLED // Default mode of dynamic frequency calculation. (DISABLED, Z_BASED, MASS_BASED)
 
 #define FTM_LINEAR_ADV_DEFAULT_ENA false // Default linear advance enable (true) or disable (false)
 #define FTM_LINEAR_ADV_DEFAULT_K 0.0f    // Default linear advance gain. (Acceleration-based scaling factor.)
@@ -1180,10 +1181,12 @@
 #define FTM_SHAPING_ZETA_E 0.03f                 // Zeta used by input shapers for E axis
 #define FTM_SHAPING_V_TOL_E 0.05f                // Vibration tolerance used by EI input shapers for E axis
 
+// #define FTM_RESONANCE_TEST                  // Sine sweep motion for resonance study
+
 // #define FTM_SMOOTHING                       // Smoothing can reduce artifacts and make steppers quieter
 //  on sharp corners, but too much will round corners.
 #if ENABLED(FTM_SMOOTHING)
-#define FTM_MAX_SMOOTHING_TIME 0.10f // Maximum smoothing time (seconds), higher consumes more RAM.
+#define FTM_MAX_SMOOTHING_TIME 0.10f // (s) Maximum smoothing time. Higher values consume more RAM.
                                      // Increase smoothing time to reduce jerky motion, ghosting and noises.
 #define FTM_SMOOTHING_TIME_X 0.00f   // (s) Smoothing time for X axis. Zero means disabled.
 #define FTM_SMOOTHING_TIME_Y 0.00f   // (s) Smoothing time for Y axis
@@ -1194,7 +1197,7 @@
 
 #define FTM_TRAJECTORY_TYPE TRAPEZOIDAL // Block acceleration profile (TRAPEZOIDAL, POLY5, POLY6)
                                         // TRAPEZOIDAL: Continuous Velocity. Max acceleration is respected.
-                                        // POLY5:       Like POLY6 with 1.5x but cpu cheaper.
+                                        // POLY5:       Like POLY6 with 1.5x but uses less CPU.
                                         // POLY6:       Continuous Acceleration (aka S_CURVE).
                                         // POLY trajectories not only reduce resonances without rounding corners, but also
                                         // reduce extruder strain due to linear advance.
@@ -1647,7 +1650,7 @@
 #if HAS_MARLINUI_U8GLIB
 // #define BOOT_MARLIN_LOGO_ANIMATED // Animated Marlin logo. Costs ~3260 (or ~940) bytes of flash.
 #endif
-#if ANY(HAS_MARLINUI_U8GLIB, TOUCH_UI_FTDI_EVE, HAS_MARLINUI_HD44780)
+#if ANY(HAS_MARLINUI_U8GLIB, TOUCH_UI_FTDI_EVE, HAS_MARLINUI_HD44780, HAS_GRAPHICAL_TFT)
 // #define SHOW_CUSTOM_BOOTSCREEN    // Show the bitmap in Marlin/_Bootscreen.h on startup.
 #endif
 #endif
@@ -1877,6 +1880,7 @@
 #define SDSORT_DYNAMIC_RAM false // Use dynamic allocation (within SD menus). Least expensive option. Set SDSORT_LIMIT before use!
 #define SDSORT_CACHE_VFATS 2     // Maximum number of 13-byte VFAT entries to use for sorting.
                                  // Note: Only affects SCROLL_LONG_FILENAMES with SDSORT_CACHE_NAMES but not SDSORT_DYNAMIC_RAM.
+#define SDSORT_QUICK true        // Use Quick Sort as a sorting algorithm. Otherwise use Bubble Sort.
 #endif
 
 // Allow international symbols in long filenames. To display correctly, the
@@ -2387,13 +2391,17 @@
  * See https://marlinfw.org/docs/features/lin_advance.html for full instructions.
  */
 // #define LIN_ADVANCE
-#if ENABLED(LIN_ADVANCE)
+
+#if ANY(LIN_ADVANCE, FT_MOTION)
 #if ENABLED(DISTINCT_E_FACTORS)
-#define ADVANCE_K {0.22} // (mm) Compression length per 1mm/s extruder speed, per extruder
+#define ADVANCE_K {0.22} // (mm) Compression length per 1mm/s extruder speed, per extruder. Override with 'M900 T<tool> K<mm>'.
 #else
-#define ADVANCE_K 0.22 // (mm) Compression length applying to all extruders
+#define ADVANCE_K 0.22 // (mm) Compression length for all extruders. Override with 'M900 K<mm>'.
 #endif
-// #define ADVANCE_K_EXTRA       // Add a second linear advance constant, configurable with M900 L.
+// #define ADVANCE_K_EXTRA       // Add a second linear advance constant, configurable with 'M900 L'.
+#endif
+
+#if ENABLED(LIN_ADVANCE)
 // #define LA_DEBUG              // Print debug information to serial during operation. Disable for production use.
 // #define EXPERIMENTAL_I2S_LA   // Allow I2S_STEPPER_STREAM to be used with LA. Performance degrades as the LA step rate reaches ~20kHz.
 
@@ -4107,13 +4115,17 @@
 /**
  * G-code Macros
  *
- * Add G-codes M810-M819 to define and run G-code macros.
- * Macros are not saved to EEPROM.
+ * Add G-codes M810-M819 to define and run G-code macros
+ * and M820 to report the current set of macros.
+ * Macros are not saved to EEPROM unless enabled below.
  */
 // #define GCODE_MACROS
 #if ENABLED(GCODE_MACROS)
 #define GCODE_MACROS_SLOTS 5      // Up to 10 may be used
 #define GCODE_MACROS_SLOT_SIZE 50 // Maximum length of a single macro
+#if ENABLED(EEPROM_SETTINGS)
+// #define GCODE_MACROS_IN_EEPROM  // Include macros in EEPROM
+#endif
 #endif
 
 /**
@@ -4724,6 +4736,11 @@
 // M43 - display pin status, toggle pins, watch pins, watch endstops & toggle LED, test servo probe
 //
 // #define PINS_DEBUGGING
+
+//
+// M265 - I2C Scanner
+//
+// #define I2C_SCANNER
 
 // Enable Tests that will run at startup and produce a report
 // #define MARLIN_TEST_BUILD
